@@ -51,22 +51,24 @@ class RingBuffer {
 
     // Transfer data from the |arraySequence| storage to the internal buffer.
     const sourceLength = arraySequence[0].length;
-    for (let i = 0; i < sourceLength; ++i) {
-      const writeIndex = (this._writeIndex + i) % this._length;
-      for (let channel = 0; channel < this._channelCount; ++channel) {
-        this._channelData[channel][writeIndex] = arraySequence[channel][i];
+    if (sourceLength > this._length) throw new Error('Cannot push data larger than buffer.');
+
+    for (let channel = 0; channel < this._channelCount; ++channel) {
+      const part2 = this._writeIndex + sourceLength - this._length;
+      if (part2 <= 0) {
+        this._channelData[channel].set(arraySequence[channel], this._writeIndex);
+      } else {
+        const part1 = Math.min(this._length - this._writeIndex, sourceLength);
+        this._channelData[channel].set(arraySequence[channel].subarray(part1), this._writeIndex);
+        this._channelData[channel].set(arraySequence[channel].subarray(-part2));
       }
     }
 
-    this._writeIndex += sourceLength;
-    if (this._writeIndex >= this._length) {
-      this._writeIndex = 0;
-    }
-
-    // For excessive frames, the buffer will be overwritten.
+    this._writeIndex = (this._writeIndex + sourceLength) % this._length;
     this._framesAvailable += sourceLength;
     if (this._framesAvailable > this._length) {
       this._framesAvailable = this._length;
+      this._readIndex = this._writeIndex;
     }
   }
 
@@ -85,23 +87,25 @@ class RingBuffer {
     }
 
     const destinationLength = arraySequence[0].length;
+    if (destinationLength > this._length) throw new Error('Cannot pull data larger than buffer.');
 
     // Transfer data from the internal buffer to the |arraySequence| storage.
-    for (let i = 0; i < destinationLength; ++i) {
-      const readIndex = (this._readIndex + i) % this._length;
-      for (let channel = 0; channel < this._channelCount; ++channel) {
-        arraySequence[channel][i] = this._channelData[channel][readIndex];
+    for (let channel = 0; channel < this._channelCount; ++channel) {
+      const part2 = this._readIndex + destinationLength - this._length;
+      if (part2 <= 0) {
+        arraySequence[channel].set(this._channelData[channel].subarray(this._readIndex, this._readIndex + destinationLength));
+      } else {
+        const part1 = Math.min(this._length - this._readIndex, destinationLength);
+        arraySequence[channel].set(this._channelData[channel].subarray(this._readIndex));
+        arraySequence[channel].set(this._channelData[channel].subarray(0, part2), part1);
       }
     }
 
-    this._readIndex += destinationLength;
-    if (this._readIndex >= this._length) {
-      this._readIndex = 0;
-    }
-
+    this._readIndex = (this._readIndex + destinationLength) % this._length;
     this._framesAvailable -= destinationLength;
     if (this._framesAvailable < 0) {
       this._framesAvailable = 0;
+      this._readIndex = this._writeIndex;
     }
   }
 } // class RingBuffer
