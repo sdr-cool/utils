@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import RtlSdr from '@sdr.cool/rtlsdrjs'
 
 const SAMPLE_RATE = 1024 * 1e3 // Must be a multiple of 512 * BUFS_PER_SEC
