@@ -23,7 +23,7 @@ export function encode(obj) {
 
 export function decode(buf) {
   const decoded = SdrMessage.decode(buf)
-  if (decoded.left) decoded.left = bytesToFloat32(decoded.left)
-  if (decoded.right) decoded.right = bytesToFloat32(decoded.right)
+  if (decoded.left.buffer) decoded.left = bytesToFloat32(decoded.left)
+  if (decoded.right.buffer) decoded.right = bytesToFloat32(decoded.right)
   return decoded
 }
