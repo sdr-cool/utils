@@ -58,8 +58,7 @@ class RingBuffer {
       if (part2 <= 0) {
         this._channelData[channel].set(arraySequence[channel], this._writeIndex);
       } else {
-        const part1 = Math.min(this._length - this._writeIndex, sourceLength);
-        this._channelData[channel].set(arraySequence[channel].subarray(part1), this._writeIndex);
+        this._channelData[channel].set(arraySequence[channel].subarray(0, -part2), this._writeIndex);
         this._channelData[channel].set(arraySequence[channel].subarray(-part2));
       }
     }
@@ -95,7 +94,7 @@ class RingBuffer {
       if (part2 <= 0) {
         arraySequence[channel].set(this._channelData[channel].subarray(this._readIndex, this._readIndex + destinationLength));
       } else {
-        const part1 = Math.min(this._length - this._readIndex, destinationLength);
+        const part1 = this._length - this._readIndex;
         arraySequence[channel].set(this._channelData[channel].subarray(this._readIndex));
         arraySequence[channel].set(this._channelData[channel].subarray(0, part2), part1);
       }
