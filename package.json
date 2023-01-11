@@ -21,6 +21,7 @@
   "homepage": "https://github.com/sdr-cool/utils#readme",
   "dependencies": {
     "@sdr.cool/demodulator-wasm": "^0.2.2",
-    "@sdr.cool/rtlsdrjs": "^0.1.0"
+    "@sdr.cool/rtlsdrjs": "^0.1.0",
+    "protobufjs": "^7.1.2"
   }
 }
