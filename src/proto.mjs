@@ -9,6 +9,7 @@ const SdrMessage = new Type('SdrMessage')
   .add(new Field('signalLevel', 4, 'double'))
   .add(new Field('mode', 5, 'string'))
   .add(new Field('frequency', 6, 'double'))
+  .add(new Field('tuningFreq', 7, 'double'))
 
 function bytesToFloat32(bytes) {
   return new Float32Array(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.length))
