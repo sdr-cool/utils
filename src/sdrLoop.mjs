@@ -61,6 +61,6 @@ export async function stop() {
   device = ''
   if (toClose) {
     await new Promise(r => setTimeout(r, 1000 / BUFS_PER_SEC + 10))
-    toClose.close()
+    await toClose.close()
   }
 }
